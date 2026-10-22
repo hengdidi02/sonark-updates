@@ -7,19 +7,29 @@
   "headerURL": "https://hengdidi02.github.io/sonark-updates/icon.png",
   "website": "https://github.com/hengdidi02/sonark-updates",
   "tintColor": "#31C48D",
-  "featuredApps": ["com.sonark.player"],
+  "featuredApps": [
+    "com.sonark.player"
+  ],
   "apps": [
     {
       "name": "Sonark",
       "bundleIdentifier": "com.sonark.player",
       "developerName": "Sonark",
       "subtitle": "网易云音乐第三方播放器",
-      "localizedDescription": "内嵌前端、启动不依赖服务器的 Sonark iOS 版。",
+      "localizedDescription": "从服务器加载前端的 Sonark iOS 版，界面改动无需重新安装即可更新。",
       "iconURL": "https://hengdidi02.github.io/sonark-updates/icon.png",
       "tintColor": "#31C48D",
       "category": "music",
       "screenshots": [],
       "versions": [
+        {
+          "version": "1.0.22",
+          "buildVersion": "23",
+          "date": "2026-10-23",
+          "downloadURL": "https://hengdidi02.github.io/sonark-updates/Sonark-1.0.22.ipa",
+          "size": 5853257,
+          "minOSVersion": "14.0"
+        },
         {
           "version": "1.0.21",
           "buildVersion": "22",
