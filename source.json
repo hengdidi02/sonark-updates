@@ -1,0 +1,41 @@
+{
+  "name": "Sonark",
+  "identifier": "com.sonark.source",
+  "subtitle": "Sonark 音乐播放器 iOS 版",
+  "description": "Sonark 内嵌前端 iOS 版本，通过 AltStore / SideStore 安装或更新。免费 Apple ID 签名有效期为 7 天，到期需重新签名。",
+  "iconURL": "https://hengdidi02.github.io/sonark-updates/icon.png",
+  "headerURL": "https://hengdidi02.github.io/sonark-updates/icon.png",
+  "website": "https://github.com/hengdidi02/sonark-updates",
+  "tintColor": "#31C48D",
+  "featuredApps": ["com.sonark.player"],
+  "apps": [
+    {
+      "name": "Sonark",
+      "bundleIdentifier": "com.sonark.player",
+      "developerName": "Sonark",
+      "subtitle": "网易云音乐第三方播放器",
+      "localizedDescription": "内嵌前端、启动不依赖服务器的 Sonark iOS 版。",
+      "iconURL": "https://hengdidi02.github.io/sonark-updates/icon.png",
+      "tintColor": "#31C48D",
+      "category": "music",
+      "screenshots": [],
+      "versions": [
+        {
+          "version": "1.0.21",
+          "buildVersion": "22",
+          "date": "2026-10-22",
+          "downloadURL": "https://hengdidi02.github.io/sonark-updates/Sonark-1.0.21.ipa",
+          "size": 5851106,
+          "minOSVersion": "14.0"
+        }
+      ],
+      "appPermissions": {
+        "entitlements": [],
+        "privacy": {
+          "NSAppleMusicUsageDescription": "访问媒体资料库用于播放本地音乐"
+        }
+      }
+    }
+  ],
+  "news": []
+}
