@@ -1,0 +1,1025 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sonark 音乐播放器 | Windows / Android / iOS</title>
+    <meta
+      name="description"
+      content="Sonark 是网易云音乐第三方客户端，支持 Windows、Android、iOS。跨端播放同步、等级成长、桌面歌词与音质选择。"
+    />
+    <meta property="og:title" content="Sonark 音乐播放器" />
+    <meta
+      property="og:description"
+      content="你的音乐，三端都在。跨端播放进度、等级经验与播放列表自动同步。"
+    />
+    <meta property="og:image" content="icon.png" />
+    <link rel="icon" href="icon.png" />
+    <style>
+      :root {
+        --bg: #070b09;
+        --surface: #0d1310;
+        --surface-2: #111815;
+        --line: rgba(255, 255, 255, 0.08);
+        --line-strong: rgba(255, 255, 255, 0.15);
+        --text: #e9f2ee;
+        --muted: #93a69f;
+        --accent: #2fe3a3;
+        --accent-2: #1fb582;
+        --accent-ink: #04140d;
+        --radius: 16px;
+        --radius-sm: 10px;
+        --max: 1180px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        color: var(--text);
+        font-family: "Segoe UI Variable Display", "Segoe UI", "PingFang SC",
+          "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+        background:
+          radial-gradient(900px 620px at 8% -10%, rgba(47, 227, 163, 0.16), transparent 62%),
+          radial-gradient(760px 520px at 102% 6%, rgba(47, 227, 163, 0.09), transparent 58%),
+          radial-gradient(900px 700px at 50% 120%, rgba(31, 181, 130, 0.07), transparent 60%),
+          var(--bg);
+        background-attachment: fixed;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      img {
+        max-width: 100%;
+        display: block;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      ::selection {
+        background: rgba(47, 227, 163, 0.28);
+      }
+
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+      }
+
+      .wrap {
+        width: min(100% - 40px, var(--max));
+        margin: 0 auto;
+      }
+
+      /* 顶部导航 */
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        background: rgba(7, 11, 9, 0.72);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .nav-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        font-size: 18px;
+      }
+
+      .brand img {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        font-size: 14.5px;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      .nav-links a:hover {
+        color: var(--text);
+      }
+
+      .nav-cta {
+        display: inline-flex;
+        align-items: center;
+        height: 36px;
+        padding: 0 16px;
+        border: 1px solid var(--line-strong);
+        border-radius: var(--radius-sm);
+        color: var(--text);
+        transition: border-color 0.25s ease, background-color 0.25s ease;
+      }
+
+      .nav-cta:hover {
+        border-color: rgba(47, 227, 163, 0.55);
+        background: rgba(47, 227, 163, 0.08);
+      }
+
+      /* 首屏 */
+      .hero {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 56px;
+        align-items: center;
+        min-height: calc(100dvh - 64px);
+        padding: 56px 0 72px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(40px, 5.4vw, 72px);
+        line-height: 1.06;
+        letter-spacing: -0.035em;
+        font-weight: 700;
+      }
+
+      .hero-sub {
+        margin: 22px 0 0;
+        max-width: 36ch;
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.75;
+      }
+
+      .hero-actions {
+        margin-top: 32px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 48px;
+        padding: 0 22px;
+        border-radius: var(--radius-sm);
+        font-size: 15px;
+        font-weight: 600;
+        white-space: nowrap;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease,
+          background-color 0.2s ease;
+      }
+
+      .btn:active {
+        transform: translateY(1px) scale(0.99);
+      }
+
+      .btn-primary {
+        color: var(--accent-ink);
+        background: linear-gradient(180deg, #40edb2, #23c78e);
+        box-shadow: 0 12px 34px rgba(47, 227, 163, 0.16);
+      }
+
+      .btn-primary:hover {
+        box-shadow: 0 16px 40px rgba(47, 227, 163, 0.26);
+      }
+
+      .btn-ghost {
+        color: var(--text);
+        border: 1px solid var(--line-strong);
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .btn-ghost:hover {
+        border-color: rgba(47, 227, 163, 0.5);
+        background: rgba(47, 227, 163, 0.07);
+      }
+
+      .hero-visual {
+        position: relative;
+        padding: 10px 0 18px;
+      }
+
+      .shot {
+        position: relative;
+        border: 1px solid var(--line-strong);
+        border-radius: var(--radius);
+        overflow: hidden;
+        transform: rotate(-1.1deg);
+        box-shadow: 0 44px 110px rgba(0, 0, 0, 0.62);
+      }
+
+      .shot img {
+        width: 100%;
+        height: auto;
+      }
+
+      .glass {
+        border: 1px solid rgba(255, 255, 255, 0.13);
+        border-radius: 14px;
+        background: rgba(11, 17, 14, 0.82);
+        backdrop-filter: blur(18px) saturate(150%);
+        -webkit-backdrop-filter: blur(18px) saturate(150%);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.08),
+          0 24px 60px rgba(0, 0, 0, 0.46);
+      }
+
+      .level-card {
+        position: absolute;
+        left: -18px;
+        bottom: -12px;
+        width: 232px;
+        padding: 16px 18px;
+        animation: float 7s ease-in-out infinite;
+      }
+
+      .level-top {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+      }
+
+      .level-num {
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      .level-tier {
+        font-size: 13px;
+        color: #9be8c9;
+      }
+
+      .level-bar {
+        margin-top: 10px;
+        height: 6px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+      }
+
+      .level-bar i {
+        display: block;
+        width: 68%;
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent-2), var(--accent));
+      }
+
+      .level-note {
+        margin-top: 8px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .sync-card {
+        position: absolute;
+        right: -10px;
+        top: 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        animation: float 8s ease-in-out infinite 0.8s;
+      }
+
+      .eq {
+        display: flex;
+        align-items: flex-end;
+        gap: 3px;
+        height: 22px;
+      }
+
+      .eq i {
+        width: 3px;
+        height: 100%;
+        border-radius: 2px;
+        background: var(--accent);
+        transform-origin: bottom;
+        animation: eq 1.15s ease-in-out infinite;
+      }
+
+      .eq i:nth-child(2) {
+        animation-delay: 0.16s;
+      }
+      .eq i:nth-child(3) {
+        animation-delay: 0.32s;
+      }
+      .eq i:nth-child(4) {
+        animation-delay: 0.48s;
+      }
+      .eq i:nth-child(5) {
+        animation-delay: 0.64s;
+      }
+
+      .sync-card strong {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .sync-card span {
+        display: block;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      /* 区块通用 */
+      section {
+        padding: 72px 0;
+      }
+
+      h2 {
+        margin: 0;
+        font-size: clamp(28px, 3.2vw, 42px);
+        line-height: 1.15;
+        letter-spacing: -0.025em;
+        font-weight: 700;
+      }
+
+      .section-sub {
+        margin: 14px 0 0;
+        max-width: 52ch;
+        color: var(--muted);
+        font-size: 16px;
+      }
+
+      /* 功能 Bento */
+      .bento {
+        margin-top: 36px;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .tile {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+        padding: 26px;
+        min-height: 190px;
+      }
+
+      .tile h3 {
+        margin: 0;
+        font-size: 19px;
+        letter-spacing: -0.01em;
+      }
+
+      .tile p {
+        margin: 10px 0 0;
+        color: var(--muted);
+        font-size: 14.5px;
+        line-height: 1.7;
+        max-width: 38ch;
+      }
+
+      .tile-wide {
+        grid-column: span 2;
+      }
+
+      .tile-tall {
+        grid-row: span 2;
+      }
+
+      .tile-shot {
+        background: var(--surface-2);
+      }
+
+      .tile-shot .tile-copy {
+        position: relative;
+        z-index: 2;
+        max-width: 44%;
+      }
+
+      .tile-shot img {
+        position: absolute;
+        right: -6%;
+        bottom: -8%;
+        width: 58%;
+        border-radius: 12px;
+        border: 1px solid var(--line-strong);
+        box-shadow: 0 28px 70px rgba(0, 0, 0, 0.5);
+      }
+
+      .tile-glow {
+        background:
+          radial-gradient(420px 260px at 88% 8%, rgba(47, 227, 163, 0.18), transparent 62%),
+          var(--surface);
+      }
+
+      .tile-tint {
+        background:
+          linear-gradient(145deg, rgba(47, 227, 163, 0.07), transparent 52%),
+          var(--surface-2);
+      }
+
+      /* 等级名牌演示 */
+      .nameplate {
+        position: relative;
+        margin-top: 26px;
+        border-radius: 14px;
+        padding: 1px;
+        background: linear-gradient(135deg, rgba(47, 227, 163, 0.85), rgba(47, 227, 163, 0.12) 55%, rgba(255, 255, 255, 0.24));
+        overflow: hidden;
+      }
+
+      .nameplate::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.28) 50%, transparent 65%);
+        transform: translateX(-120%);
+        animation: sweep 5.5s ease-in-out infinite;
+      }
+
+      .nameplate-inner {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 16px 18px;
+        border-radius: 13px;
+        background: #0b120f;
+      }
+
+      .nameplate-inner strong {
+        font-size: 17px;
+        letter-spacing: -0.01em;
+      }
+
+      .nameplate-inner em {
+        font-style: normal;
+        font-size: 12.5px;
+        color: #9be8c9;
+      }
+
+      .nameplate-lv {
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+      }
+
+      /* 波形 */
+      .wave {
+        display: flex;
+        align-items: flex-end;
+        gap: 4px;
+        height: 64px;
+        margin-top: 22px;
+      }
+
+      .wave i {
+        flex: 1;
+        border-radius: 2px;
+        background: linear-gradient(180deg, rgba(47, 227, 163, 0.9), rgba(47, 227, 163, 0.18));
+      }
+
+      /* 界面画廊 */
+      .gallery-strip {
+        margin-top: 36px;
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(320px, 46%);
+        gap: 18px;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        padding-bottom: 14px;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(47, 227, 163, 0.35) transparent;
+      }
+
+      .gallery-strip figure {
+        margin: 0;
+        scroll-snap-align: start;
+      }
+
+      .gallery-strip img {
+        width: 100%;
+        border-radius: var(--radius);
+        border: 1px solid var(--line);
+        box-shadow: 0 22px 60px rgba(0, 0, 0, 0.42);
+      }
+
+      .gallery-strip figcaption {
+        margin-top: 12px;
+        font-size: 13.5px;
+        color: var(--muted);
+      }
+
+      /* 下载 */
+      .download-list {
+        margin-top: 36px;
+        border-top: 1px solid var(--line);
+      }
+
+      .dl-row {
+        display: grid;
+        grid-template-columns: 44px 1fr auto;
+        align-items: center;
+        gap: 22px;
+        padding: 26px 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .dl-row img {
+        width: 30px;
+        height: 30px;
+        object-fit: contain;
+      }
+
+      .dl-row h3 {
+        margin: 0;
+        font-size: 20px;
+        letter-spacing: -0.015em;
+      }
+
+      .dl-meta {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .dl-meta a {
+        color: #9be8c9;
+        border-bottom: 1px solid rgba(155, 232, 201, 0.35);
+      }
+
+      .dl-meta a:hover {
+        border-bottom-color: #9be8c9;
+      }
+
+      .dl-action {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .note {
+        margin: 22px 0 0;
+        color: var(--muted);
+        font-size: 13.5px;
+      }
+
+      footer {
+        padding: 44px 0 56px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 13.5px;
+      }
+
+      .footer-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+
+      .footer-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      .footer-brand img {
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+      }
+
+      /* 入场动效 */
+      .js .reveal {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.75s ease, transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .js .reveal.in {
+        opacity: 1;
+        transform: none;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-9px);
+        }
+      }
+
+      @keyframes eq {
+        0%,
+        100% {
+          transform: scaleY(0.32);
+        }
+        50% {
+          transform: scaleY(1);
+        }
+      }
+
+      @keyframes sweep {
+        0% {
+          transform: translateX(-120%);
+        }
+        55%,
+        100% {
+          transform: translateX(220%);
+        }
+      }
+
+      @media (max-width: 980px) {
+        .hero {
+          grid-template-columns: 1fr;
+          gap: 44px;
+          min-height: 0;
+          padding: 40px 0 56px;
+        }
+
+        .hero-visual {
+          order: 2;
+        }
+
+        .hero-sub {
+          max-width: 46ch;
+        }
+
+        .bento {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .tile-wide {
+          grid-column: span 2;
+        }
+
+        .tile-tall {
+          grid-row: span 1;
+        }
+
+        .tile-shot .tile-copy {
+          max-width: 100%;
+        }
+
+        .tile-shot img {
+          position: relative;
+          right: auto;
+          bottom: auto;
+          width: 100%;
+          margin-top: 20px;
+        }
+
+        .gallery-strip {
+          grid-auto-columns: minmax(280px, 82%);
+        }
+      }
+
+      @media (max-width: 720px) {
+        .nav-links {
+          gap: 16px;
+        }
+
+        .nav-links a:not(.nav-cta) {
+          display: none;
+        }
+
+        .hero {
+          padding-top: 32px;
+        }
+
+        .hero-visual {
+          padding-bottom: 36px;
+        }
+
+        .level-card {
+          left: -4px;
+          bottom: -20px;
+          width: 200px;
+          padding: 13px 15px;
+        }
+
+        .sync-card {
+          right: -2px;
+          top: 10px;
+          padding: 10px 12px;
+        }
+
+        .bento {
+          grid-template-columns: 1fr;
+        }
+
+        .tile-wide,
+        .tile-tall {
+          grid-column: span 1;
+          grid-row: span 1;
+        }
+
+        .dl-row {
+          grid-template-columns: 34px 1fr;
+          gap: 16px;
+          padding: 22px 0;
+        }
+
+        .dl-action {
+          grid-column: span 2;
+          margin-top: 6px;
+        }
+
+        .dl-action .btn {
+          width: 100%;
+        }
+
+        section {
+          padding: 56px 0;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+
+        .js .reveal {
+          opacity: 1;
+          transform: none;
+          transition: none;
+        }
+
+        .level-card,
+        .sync-card,
+        .eq i,
+        .nameplate::after {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="nav">
+      <div class="wrap nav-inner">
+        <a class="brand" href="#top" aria-label="Sonark 首页">
+          <img src="icon.png" alt="Sonark 图标" />
+          <span>Sonark</span>
+        </a>
+        <nav class="nav-links" aria-label="主导航">
+          <a href="#features">功能</a>
+          <a href="#screens">界面</a>
+          <a class="nav-cta" href="#download">下载</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="top">
+      <div class="wrap">
+        <section class="hero" aria-labelledby="hero-title">
+          <div class="hero-copy reveal">
+            <h1 id="hero-title">你的音乐，<br />三端都在。</h1>
+            <p class="hero-sub">
+              网易云音乐第三方客户端。Windows、Android、iOS 共用播放进度、播放列表和等级经验。
+            </p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="#download">立即下载</a>
+              <a class="btn btn-ghost" href="#features">查看功能</a>
+            </div>
+          </div>
+
+          <div class="hero-visual reveal">
+            <div class="shot">
+              <img src="shots/home.jpg" alt="Sonark 桌面版主界面" />
+            </div>
+            <div class="glass level-card">
+              <div class="level-top">
+                <span class="level-num">Lv.42</span>
+                <span class="level-tier">铂金</span>
+              </div>
+              <div class="level-bar"><i></i></div>
+              <div class="level-note">完整听完一首歌 +10 经验</div>
+            </div>
+            <div class="glass sync-card">
+              <div class="eq" aria-hidden="true">
+                <i></i><i></i><i></i><i></i><i></i>
+              </div>
+              <div>
+                <strong>已同步到 Android</strong>
+                <span>播放进度与队列一致</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="wrap">
+        <section id="features" aria-labelledby="features-title">
+          <h2 id="features-title" class="reveal">不止是播放器</h2>
+          <p class="section-sub reveal">
+            从播放、歌词到等级成长，常用功能都在顺手的位置，不需要来回切换应用。
+          </p>
+
+          <div class="bento">
+            <article class="tile tile-wide tile-shot tile-glow reveal">
+              <div class="tile-copy">
+                <h3>跨端播放同步</h3>
+                <p>
+                  在电脑听到一半，拿起手机接着放。当前歌曲、播放进度和队列自动对齐，两端登录同一账号即可。
+                </p>
+              </div>
+              <img src="shots/playlist.jpg" alt="Sonark 歌单页面" />
+            </article>
+
+            <article class="tile tile-tall tile-glow reveal">
+              <h3>等级与排行榜</h3>
+              <p>
+                完整听完一首加 10 经验，升级所需经验逐级递增。名牌分五档，升级动画随段位变化。
+              </p>
+              <div class="nameplate" aria-hidden="true">
+                <div class="nameplate-inner">
+                  <div>
+                    <strong>Sonark 用户</strong><br />
+                    <em>铂金段位 · 全服第 12</em>
+                  </div>
+                  <span class="nameplate-lv">42</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="tile reveal">
+              <h3>音质选择</h3>
+              <p>标准到 Hi-Res 按需切换。桌面端支持多源解锁，官方无版权时自动匹配可用音源。</p>
+              <div class="wave" aria-hidden="true">
+                <i style="height: 34%"></i><i style="height: 58%"></i><i style="height: 82%"></i>
+                <i style="height: 46%"></i><i style="height: 96%"></i><i style="height: 64%"></i>
+                <i style="height: 38%"></i><i style="height: 74%"></i><i style="height: 52%"></i>
+                <i style="height: 88%"></i><i style="height: 42%"></i><i style="height: 68%"></i>
+                <i style="height: 30%"></i><i style="height: 56%"></i><i style="height: 80%"></i>
+                <i style="height: 44%"></i><i style="height: 66%"></i><i style="height: 36%"></i>
+              </div>
+            </article>
+
+            <article class="tile reveal">
+              <h3>桌面歌词</h3>
+              <p>逐字着色，字体与透明度可调。锁定后鼠标穿透，游戏和全屏应用都不受影响。</p>
+            </article>
+
+            <article class="tile tile-tint reveal">
+              <h3>后台稳定播放</h3>
+              <p>Android 前台服务保活，锁屏与通知栏都能控制。断开蓝牙耳机自动暂停，不会突然外放。</p>
+            </article>
+
+            <article class="tile tile-wide tile-shot reveal">
+              <div class="tile-copy">
+                <h3>歌单与队列</h3>
+                <p>
+                  点一首歌就自动装载整张歌单。队列支持拖拽、搜索与清空，随机和循环切换即时生效。
+                </p>
+              </div>
+              <img src="shots/discover.jpg" alt="Sonark 发现音乐页面" />
+            </article>
+          </div>
+        </section>
+      </div>
+
+      <div class="wrap">
+        <section id="screens" aria-labelledby="screens-title">
+          <h2 id="screens-title" class="reveal">看得见的顺手</h2>
+          <p class="section-sub reveal">深色界面、专辑色氛围、全屏播放，长时间使用也不刺眼。</p>
+          <div class="gallery-strip reveal">
+            <figure>
+              <img src="shots/home.jpg" alt="主界面截图" />
+              <figcaption>主界面：推荐、歌单和播放栏在一屏</figcaption>
+            </figure>
+            <figure>
+              <img src="shots/playlist.jpg" alt="歌单页面截图" />
+              <figcaption>歌单：收藏、搜索与整张播放</figcaption>
+            </figure>
+            <figure>
+              <img src="shots/discover.jpg" alt="发现音乐截图" />
+              <figcaption>发现：歌单、排行榜、歌手与最新音乐</figcaption>
+            </figure>
+            <figure>
+              <img src="shots/player.jpg" alt="全屏播放页面截图" />
+              <figcaption>全屏播放：专辑封面与逐行歌词</figcaption>
+            </figure>
+          </div>
+        </section>
+      </div>
+
+      <div class="wrap">
+        <section id="download" aria-labelledby="download-title">
+          <h2 id="download-title" class="reveal">选择你的设备</h2>
+          <p class="section-sub reveal">下载后直接安装。桌面端与 Android 端内置更新检查，后续版本自动提示。</p>
+
+          <div class="download-list">
+            <div class="dl-row reveal">
+              <img src="logos/windows.svg" alt="Windows 标志" />
+              <div>
+                <h3>Windows</h3>
+                <p class="dl-meta">版本 1.0.39，122 MB，Windows 10 / 11 x64</p>
+              </div>
+              <div class="dl-action">
+                <a
+                  class="btn btn-primary"
+                  href="http://113.44.74.113:8443/update/sonark/Sonark-1.0.39-x64-setup.exe"
+                  >下载 Windows 版</a
+                >
+              </div>
+            </div>
+
+            <div class="dl-row reveal">
+              <img src="logos/android.svg" alt="Android 标志" />
+              <div>
+                <h3>Android</h3>
+                <p class="dl-meta">版本 1.0.21，8 MB，Android 7.0 及以上</p>
+              </div>
+              <div class="dl-action">
+                <a
+                  class="btn btn-primary"
+                  href="http://113.44.74.113:8443/update/sonark/Sonark-1.0.21.apk"
+                  >下载 Android 版</a
+                >
+              </div>
+            </div>
+
+            <div class="dl-row reveal">
+              <img src="logos/apple.svg" alt="Apple 标志" />
+              <div>
+                <h3>iOS</h3>
+                <p class="dl-meta">
+                  版本 1.0.21，5.6 MB，iOS 14 及以上，需签名安装<br />
+                  <a href="https://hengdidi02.github.io/sonark-updates/source.json">添加 AltStore 更新源</a>
+                </p>
+              </div>
+              <div class="dl-action">
+                <a
+                  class="btn btn-primary"
+                  href="https://hengdidi02.github.io/sonark-updates/Sonark-1.0.21.ipa"
+                  >下载 iOS 版</a
+                >
+              </div>
+            </div>
+          </div>
+
+          <p class="note">
+            iOS 使用免费 Apple ID 签名时有效期为 7 天，到期后需重新签名安装。桌面和 Android
+            更新地址为直连，浏览器提示不安全时选择继续访问即可。
+          </p>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <div class="wrap footer-row">
+        <span class="footer-brand"><img src="icon.png" alt="" />Sonark</span>
+        <span>第三方网易云音乐客户端，音乐版权归原平台所有。</span>
+      </div>
+    </footer>
+
+    <script>
+      document.documentElement.classList.add("js");
+
+      const items = document.querySelectorAll(".reveal");
+      if ("IntersectionObserver" in window) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("in");
+                io.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.16 }
+        );
+        items.forEach((el) => io.observe(el));
+      } else {
+        items.forEach((el) => el.classList.add("in"));
+      }
+    </script>
+  </body>
+</html>
