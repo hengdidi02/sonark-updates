@@ -23,6 +23,14 @@
       "screenshots": [],
       "versions": [
         {
+          "version": "1.0.28",
+          "buildVersion": "29",
+          "date": "2026-10-23",
+          "downloadURL": "https://hengdidi02.github.io/sonark-updates/Sonark-1.0.28.ipa",
+          "size": 6480905,
+          "minOSVersion": "14.0"
+        },
+        {
           "version": "1.0.27",
           "buildVersion": "28",
           "date": "2026-10-23",
